@@ -5,19 +5,36 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a24b4ae1ab.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
     <title>Pokedex</title>
 </head>
 
 <body>
-    <div id="pokedex-container"></div>
-    <div id="page-container">
+    <div class="pokedex__wrapper">
+        <img class="pokedex__img" src="./assets/Pokeball.png"></img>
+        <div class="pokedex__title">Pokedex</div>
+        <div class="pokedex__search" id="searchBox">
+            <input type="search" placeholder="Pokémon name" id="pokedex-search">
+            <i class="fa fa-search"></i>
+        </div>
+        <div class="select-menu active">
+            <div class="select-btn">
+                <span class="sBtn-text">Type</span>
+                <i class="fa-solid fa-chevron-down" id="dropdownArrow"></i>
+            </div>
+            <ul class="options">
 
-        <div id="previous">Previous</div>
-        <div id="count"></div>
-        <div id="next">Next</div>
+            </ul>
+        </div>
+        <div style="width:100%;height:0;padding-bottom:62%;position:relative;" id="loadingImg"><iframe
+                src="https://giphy.com/embed/cJ5tJAaqaqBJCckOft" width="100%" height="100%" style="position:absolute"
+                frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+        </div>
+        <div id="pokedex-container"></div>
     </div>
-    <script src="script.js"></script>
+    </div>
+    <script type="module" src="script.js"></script>
 
 </body>
 
