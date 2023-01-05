@@ -1,9 +1,12 @@
 // Load pokemon
 var count = 1;
-var offset = 0;
 var pokeList = [];
-
+var filterList = [];
+var currentShow;
+var offset = 0;
+var filterArr = [];
 const typesName = [
+  { type: "All" },
   {
     type: "Rock",
     color: "#B69E31",
@@ -78,13 +81,23 @@ const typesName = [
   },
 ];
 function nextPage() {
-  count++;
-  offset = (count - 1) * 20;
+  if (offset >= currentShow) {
+    return 0;
+  } else {
+    const loadingImg = document.getElementById("loadingImg");
+    loadingImg.style.display = "block";
+
+    if (offset < currentShow) offset += 20;
+    if (filterArr.length != 0) showPokemon(filterArr);
+    else showPokemon(filterList);
+    //   // setTimeout(() => {
+    //   // }, 2000);
+  }
 }
 
 async function fetchPokeList() {
   const response = await fetch(
-    "https://pokeapi.co/api/v2/pokemon/" + `?offset=0&limit=1154`
+    "https://pokeapi.co/api/v2/pokemon/" + `?offset=0&limit=905`
   );
   const data = await response.json();
   const pokemon = data.results;
@@ -99,14 +112,15 @@ async function fetchPokeList() {
   return pokeList;
 }
 
-const pokeArray = await fetchPokeList();
-showPokemon(pokeArray);
+filterList = await fetchPokeList();
+showPokemon(filterList);
 
-async function showPokemon(pokeList) {
+function showPokemon(pokeList) {
+  const loadingImg = document.getElementById("loadingImg");
   //load 20 cards pokemon/time
-  for (let i = offset; i < offset + 20 && i < pokeList.length; i++) {
-    const loadingImg = document.getElementById("loadingImg");
-    loadingImg.style.display = "none";
+  loadingImg.style.display = "none";
+  currentShow = pokeList.length;
+  for (let i = offset; i < offset + 20 && i < currentShow; i++) {
     createPokemon(pokeList[i]);
   }
 }
@@ -160,17 +174,40 @@ function createPokemon(pokemonData) {
 
 // add new pokemon if user scroll to bottom
 window.onscroll = function (ev) {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
     nextPage();
-    showPokemon(pokeList);
   }
 };
 
-// drowdrop
+const searchInput = document.getElementById("pokedex-search");
+searchInput.addEventListener("input", () => {
+  const pokedexContainer = document.getElementById("pokedex-container");
+  const selectedField = document.getElementById("type").innerText.toLowerCase();
+  if (searchInput.value != "") {
+    filterList = [];
+    pokedexContainer.innerHTML = "";
+    filterList = pokeList.filter((pokemon) => {
+      return pokemon.name.match(`${searchInput.value.trim()}`);
+    });
+  } else {
+    pokedexContainer.innerHTML = "";
+    filterList = pokeList;
+    offset = 0;
+  }
+  currentShow = filterList.length;
+  if (selectedField != "type") {
+    filterPoke(selectedField);
+    offset =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
+        ? filterList.length
+        : Math.ceil((window.innerHeight + window.scrollY) / 150);
+  } else showPokemon(filterList);
+});
+
+// dropdown
 const dropdownArrow = document.getElementById("dropdownArrow");
 const menuOptions = document.querySelector("ul");
 dropdownArrow.addEventListener("click", () => {
-  console.log(dropdownArrow);
   typesName.map((item) => {
     const option = document.createElement("li");
     option.className = "option";
@@ -197,12 +234,30 @@ function showSelectOption() {
   );
 
   options.forEach((option) => {
-    console.log(option);
     option.addEventListener("click", () => {
       let selectedOption = option.querySelector(".option-text").innerText;
       sBtn_text.innerText = selectedOption;
-
       optionMenu.classList.remove("active");
+      filterPoke(selectedOption.toLowerCase());
     });
   });
+}
+
+function filterPoke(selectedField) {
+  const pokedexContainer = document.getElementById("pokedex-container");
+  pokedexContainer.innerHTML = "";
+  filterArr = filterList.filter((pokemon) => {
+    for (let poke of pokemon.types) {
+      if (poke.type.name == selectedField) {
+        return true;
+      }
+    }
+    return false;
+  });
+  if (selectedField == "all") filterArr = filterList;
+  currentShow = filterArr.length;
+
+  console.log(filterArr);
+  offset = 0;
+  showPokemon(filterArr);
 }

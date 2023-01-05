@@ -23,7 +23,8 @@ body {
 }
 
 .pokedex__wrapper {
-  max-width: 390px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .pokedex__img {
@@ -147,8 +148,8 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 132px;
-  height: 16px;
+  /* width: 132px;
+  height: 16px; */
   font-family: "Poppins";
   font-style: normal;
   font-weight: 700;
