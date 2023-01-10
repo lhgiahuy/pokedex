@@ -83,7 +83,7 @@ const typesName = [
 
 async function fetchPokeList() {
   const response = await fetch(
-    "https://pokeapi.co/api/v2/pokemon/" + `?offset=0&limit=10`
+    "https://pokeapi.co/api/v2/pokemon/" + `?offset=0&limit=100`
   );
   const data = await response.json();
   const pokemon = data.results;
@@ -102,7 +102,7 @@ const pokemon = await fetchPokeList();
 
 let pokemonProfile = [];
 pokemon.map((profile) => {
-  if (profile.id == 9) {
+  if (profile.id == 70) {
     pokemonProfile = profile;
   }
 });
