@@ -102,7 +102,7 @@ const pokemon = await fetchPokeList();
 
 let pokemonProfile = [];
 pokemon.map((profile) => {
-  if (profile.id == 70) {
+  if (profile.id == 70 /* pass id here */) {
     pokemonProfile = profile;
   }
 });
