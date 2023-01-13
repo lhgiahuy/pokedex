@@ -161,6 +161,7 @@ function createPokemon(pokemonData) {
   // Add Pokémon id and types to the card
   const pokemonId = document.createElement("div");
   pokemonId.classList.add("pokemon-id");
+  pokemonId.setAttribute("data-id", pokemonData.id);
   if (pokemonData.id < 10) {
     pokemonId.innerHTML = `#00${pokemonData.id}`;
   } else if (pokemonData.id < 100) {
