@@ -181,9 +181,22 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   border-radius: 10px;
 }
 
+.pokedex__filter {
+  width: 330px;
+  height: 25px;
+  display: flex;
+  justify-content: space-around;
+  margin: 30px 30px;
+}
+
+.pokedex__filter i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
 .select-menu {
   max-width: 330px;
-  margin: 30px 30px;
 }
 .select-menu .select-btn {
   display: flex;
@@ -207,7 +220,6 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   overflow-y: auto;
   max-height: 125px;
   margin-top: 5px;
-  border: 1px solid #dc3535;
   border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

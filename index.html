@@ -18,21 +18,42 @@
             <input type="search" placeholder="Pokémon name" id="pokedex-search">
             <i class="fa fa-search"></i>
         </div>
-        <div class="select-menu active">
-            <div class="select-btn">
-                <span class="sBtn-text" id="type">Type</span>
-                <i class="fa-solid fa-chevron-down" id="dropdownArrow"></i>
+        <div class="pokedex__filter">
+            <div class="select-menu select-menu--type active">
+                <div class="select-btn">
+                    <span class="sBtn-text" id="type">Type</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__type"></i>
+                </div>
+                <ul class="options"></ul>
             </div>
-            <ul class="options">
-
-            </ul>
+            <div class="select-menu select-menu--region active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Region</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__region"></i>
+                </div>
+                <ul class="options" id="options--region"></ul>
+            </div>
+            <div class="select-menu active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Legendary</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__legendary"></i>
+                </div>
+                <ul class="options"></ul>
+            </div>
+            <div class="select-menu active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Shiny</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow-shiny"></i>
+                </div>
+                <ul class="options"></ul>
+            </div>
+            <i class="fa-solid fa-xmark"></i>
         </div>
         <div id="pokedex-container">
         </div>
-        <div style="width:100%;height:0;padding-bottom:62%;position:relative;" id="loadingImg"><iframe
-                src="https://giphy.com/embed/cJ5tJAaqaqBJCckOft" width="100%" height="100%" style="position:absolute"
-                frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-        </div>
+        <div style="width:80%;height:0;padding-bottom:100%;position:relative; margin-left: auto;" id="loadingImg">
+            <iframe src="https://giphy.com/embed/nMy8HTFQRWpudNwbxQ" width="80%" height="100%" style="position:absolute"
+                frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
 
     </div>
     </div>

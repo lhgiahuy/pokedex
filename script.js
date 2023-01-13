@@ -1,12 +1,13 @@
 // Load pokemon
-var count = 1;
 var pokeList = [];
 var filterList = [];
 var currentShow;
 var offset = 0;
 var filterArr = [];
+var region = [{ name: "All Regions" }];
+var tmp = {};
 const typesName = [
-  { type: "All" },
+  { type: "All Types" },
   {
     type: "Rock",
     color: "#B69E31",
@@ -107,15 +108,33 @@ async function fetchPokeList() {
       .then((pokemonData) => {
         // fetchPoke(pokemonData)
         pokeList.push(pokemonData);
+        tmp[pokemonData.name] = {
+          pokemonData: {
+            id: pokemonData.id,
+            name: pokemonData.name,
+            types: pokemonData.types.map((poke) => {
+              return poke.type.name;
+            }),
+          },
+        };
       });
   }
+  console.log(tmp.pikachu);
+  localStorage.setItem("pokemonData", JSON.stringify(tmp));
+  //var arr = JSON.parse(localStorage.getItem("pokemonData"));
   return pokeList;
 }
-
+// console.log(arr);
+// if (arr == null) {
+//   // pokeList = arr;
+// }
 filterList = await fetchPokeList();
+
 showPokemon(filterList);
 
 function showPokemon(pokeList) {
+  console.log(pokeList);
+
   const loadingImg = document.getElementById("loadingImg");
   //load 20 cards pokemon/time
   loadingImg.style.display = "none";
@@ -204,8 +223,8 @@ searchInput.addEventListener("input", () => {
   } else showPokemon(filterList);
 });
 
-// dropdown
-const dropdownArrow = document.getElementById("dropdownArrow");
+// dropdown filter by type
+const dropdownArrow = document.getElementById("dropdownArrow__type");
 const menuOptions = document.querySelector("ul");
 dropdownArrow.addEventListener("click", () => {
   typesName.map((item) => {
@@ -220,12 +239,43 @@ dropdownArrow.addEventListener("click", () => {
     menuOptions.appendChild(option);
   });
   // show select option
-  showSelectOption();
+  showSelectOption("dropdownArrow__type", "select-menu--type");
 });
 
-function showSelectOption() {
-  const optionMenu = document.querySelector(".select-menu"),
-    selectBtn = optionMenu.querySelector(".select-btn"),
+// dropdown filter by region
+
+async function fetchRegion() {
+  for (let i = 1; i < 10; i++) {
+    const response = await fetch(`https://pokeapi.co/api/v2/region/${i}`);
+    const data = await response.json();
+    region = [...region, data];
+    console.log(region);
+  }
+  return region;
+}
+
+fetchRegion();
+
+const dropdownArrowRegion = document.getElementById("dropdownArrow__region");
+const menuOptionsRegion = document.getElementById("options--region");
+dropdownArrowRegion.addEventListener("click", () => {
+  region.map((location) => {
+    const option = document.createElement("li");
+    option.className = "option";
+    // add type
+    const optionText = document.createElement("span");
+    optionText.textContent = location.name;
+    optionText.className = "option-text";
+    option.appendChild(optionText);
+    menuOptionsRegion.appendChild(option);
+  });
+  // show select option
+  showSelectOption("dropdownArrow__region", "select-menu--region");
+});
+
+function showSelectOption(filterName, menuName) {
+  const optionMenu = document.querySelector(`.${menuName}`),
+    selectBtn = document.getElementById(filterName),
     options = optionMenu.querySelectorAll(".option"),
     sBtn_text = optionMenu.querySelector(".sBtn-text");
 
@@ -239,6 +289,7 @@ function showSelectOption() {
       sBtn_text.innerText = selectedOption;
       optionMenu.classList.remove("active");
       filterPoke(selectedOption.toLowerCase());
+      filerPokeByRegion(selectedOption);
     });
   });
 }
@@ -254,10 +305,20 @@ function filterPoke(selectedField) {
     }
     return false;
   });
-  if (selectedField == "all") filterArr = filterList;
+  if (selectedField == "all types") filterArr = filterList;
   currentShow = filterArr.length;
 
   console.log(filterArr);
   offset = 0;
   showPokemon(filterArr);
+}
+
+async function filerPokeByRegion(selectedField) {
+  const response = await fetch(region[1].pokedexes[0].url);
+  const data = await response.json();
+  console.log(data.pokemon_entries);
+  // const regionArr = [];
+  // data.pokemon_entries.forEach((poke) => {
+  //   poke.pokemon_species.name =
+  // })
 }
