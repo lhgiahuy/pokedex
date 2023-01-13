@@ -5,10 +5,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <script src="https://kit.fontawesome.com/a24b4ae1ab.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
+    <title>Pokedex</title>
 </head>
 
 <body>
+    <div class="pokedex__wrapper">
+        <img class="pokedex__img" src="./assets/Pokeball.png"></img>
+        <div class="pokedex__title">Pokedex</div>
+        <div class="pokedex__search" id="searchBox">
+            <input type="search" placeholder="Pokémon name" id="pokedex-search">
+            <i class="fa fa-search"></i>
+        </div>
+        <div class="pokedex__filter">
+            <div class="select-menu select-menu--type active">
+                <div class="select-btn">
+                    <span class="sBtn-text" id="type">Type</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__type"></i>
+                </div>
+                <ul class="options"></ul>
+            </div>
+            <div class="select-menu select-menu--region active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Region</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__region"></i>
+                </div>
+                <ul class="options" id="options--region"></ul>
+            </div>
+            <div class="select-menu active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Legendary</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow__legendary"></i>
+                </div>
+                <ul class="options"></ul>
+            </div>
+            <div class="select-menu active">
+                <div class="select-btn">
+                    <span class="sBtn-text">Shiny</span>
+                    <i class="fa-solid fa-chevron-down" id="dropdownArrow-shiny"></i>
+                </div>
+                <ul class="options"></ul>
+            </div>
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+        <div id="pokedex-container">
+        </div>
+        <div style="width:80%;height:0;padding-bottom:100%;position:relative; margin-left: auto;" id="loadingImg">
+            <iframe src="https://giphy.com/embed/nMy8HTFQRWpudNwbxQ" width="80%" height="100%" style="position:absolute"
+                frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+
+    </div>
+    </div>
+    <script type="module" src="script.js"></script>
 
 </body>
 
