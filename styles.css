@@ -119,6 +119,10 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   padding: 10px 4px 0px;
   margin-top: 60px;
 }
+
+#pokedex-container a {
+  text-decoration: none;
+}
 .pokemon-card {
   display: flex;
   flex-direction: column;

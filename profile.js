@@ -1,10 +1,8 @@
 // Load pokemonDetails.appendChild(pokemonDefense);
 
-
 var count = 1;
 var offset = 0;
 var pokeList = [];
-
 
 const typesName = [
   {
@@ -99,10 +97,10 @@ async function fetchPokeList() {
 }
 
 const pokemon = await fetchPokeList();
-
+const pokeId = JSON.parse(localStorage.getItem("pokemonData"));
 let pokemonProfile = [];
 pokemon.map((profile) => {
-  if (profile.id == 70) {
+  if (profile.id == pokeId) {
     pokemonProfile = profile;
   }
 });
@@ -124,10 +122,10 @@ if (pokemonProfile.id < 10) {
 let background = document.querySelector("body");
 let primaryColor = "";
 
-function getPrimaryColor(){
-    typesName.map((item) => {
+function getPrimaryColor() {
+  typesName.map((item) => {
     if (item.type.toLowerCase() == pokemonProfile.types[0].type.name) {
-       primaryColor = item.color;
+      primaryColor = item.color;
     }
   });
 }
@@ -137,7 +135,7 @@ background.style.backgroundColor = primaryColor;
 
 let pokemonImage = document.createElement("img");
 pokemonImage.classList.add("pokemon-image");
-pokemonImage.src =`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonProfile.id}.png`;
+pokemonImage.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonProfile.id}.png`;
 
 let imgContainer = document.querySelector(".img_container");
 imgContainer.appendChild(pokemonImage);
@@ -158,16 +156,18 @@ pokemonProfile.types.map((poke) => {
 });
 card.appendChild(pokemonTypes);
 
-
-
 const pokemonWeight = document.createElement("div");
 pokemonWeight.classList.add("pokemon-weight");
 
-if (/(-?\d+)(\d{1})/.test(pokemonProfile.weight)){
-  pokemonProfile.weight = pokemonProfile.weight.toString().replace(/(-?\d+)(\d{1})/, "$1,$2");
+if (/(-?\d+)(\d{1})/.test(pokemonProfile.weight)) {
+  pokemonProfile.weight = pokemonProfile.weight
+    .toString()
+    .replace(/(-?\d+)(\d{1})/, "$1,$2");
   pokemonWeight.innerHTML = `${pokemonProfile.weight} kg`;
-} else if (/(-?\d+)(\d{2})/.test(pokemonProfile.weight)){
-  pokemonProfile.weight = pokemonProfile.weight.toString().replace(/(-?\d+)(\d{2})/, "$1,$2");
+} else if (/(-?\d+)(\d{2})/.test(pokemonProfile.weight)) {
+  pokemonProfile.weight = pokemonProfile.weight
+    .toString()
+    .replace(/(-?\d+)(\d{2})/, "$1,$2");
   pokemonWeight.innerHTML = `${pokemonProfile.weight} kg`;
 }
 
@@ -177,17 +177,20 @@ weightContainer.append(pokemonWeight);
 const pokemonHeight = document.createElement("div");
 pokemonHeight.classList.add("pokemon-height");
 
-if (/(-?\d+)(\d{1})/.test(pokemonProfile.height)){
-  pokemonProfile.height = pokemonProfile.height.toString().replace(/(-?\d+)(\d{1})/, "$1,$2");
+if (/(-?\d+)(\d{1})/.test(pokemonProfile.height)) {
+  pokemonProfile.height = pokemonProfile.height
+    .toString()
+    .replace(/(-?\d+)(\d{1})/, "$1,$2");
   pokemonHeight.innerHTML = `${pokemonProfile.height} kg`;
-} else if (/(-?\d+)(\d{2})/.test(pokemonProfile.height)){
-  pokemonProfile.height = pokemonProfile.height.toString().replace(/(-?\d+)(\d{2})/, "$1,$2");
+} else if (/(-?\d+)(\d{2})/.test(pokemonProfile.height)) {
+  pokemonProfile.height = pokemonProfile.height
+    .toString()
+    .replace(/(-?\d+)(\d{2})/, "$1,$2");
   pokemonWeight.innerHTML = `${pokemonProfile.height} kg`;
 } else pokemonHeight.innerHTML = `0,${pokemonProfile.height} m`;
 
 const heightContainer = document.querySelector(".height_container");
 heightContainer.append(pokemonHeight);
-
 
 const pokemonAbilities = document.createElement("div");
 pokemonAbilities.classList.add("pokemon-abilities");
@@ -202,23 +205,36 @@ abilitiesContainer.append(pokemonAbilities);
 
 const pokemonDetails = document.querySelector(".details");
 
-
 function createDiv(divName, data) {
-    const div = document.createElement("div");
-    div.classList.add(`${divName}`);
-    if (data < 100){
-      div.innerHTML = `0${data}`;
-    }
-    else div.innerHTML = `${data}`;
-    return div;
+  const div = document.createElement("div");
+  div.classList.add(`${divName}`);
+  if (data < 100) {
+    div.innerHTML = `0${data}`;
+  } else div.innerHTML = `${data}`;
+  return div;
 }
 
 const pokemonHP = createDiv("pokemon-hp", pokemonProfile.stats[0].base_stat);
-const pokemonAttack = createDiv("pokemon-attack", pokemonProfile.stats[1].base_stat);
-const pokemonDefense = createDiv("pokemon-defense", pokemonProfile.stats[2].base_stat);
-const pokemonSpAttack = createDiv("pokemon-spAttack", pokemonProfile.stats[3].base_stat);
-const pokemonSpDefense = createDiv("pokemon-spDefense", pokemonProfile.stats[4].base_stat);
-const pokemonSpeed = createDiv("pokemon-speed",pokemonProfile.stats[5].base_stat);
+const pokemonAttack = createDiv(
+  "pokemon-attack",
+  pokemonProfile.stats[1].base_stat
+);
+const pokemonDefense = createDiv(
+  "pokemon-defense",
+  pokemonProfile.stats[2].base_stat
+);
+const pokemonSpAttack = createDiv(
+  "pokemon-spAttack",
+  pokemonProfile.stats[3].base_stat
+);
+const pokemonSpDefense = createDiv(
+  "pokemon-spDefense",
+  pokemonProfile.stats[4].base_stat
+);
+const pokemonSpeed = createDiv(
+  "pokemon-speed",
+  pokemonProfile.stats[5].base_stat
+);
 
 const pokemonStats = document.createElement("div");
 pokemonStats.classList.add("pokemon-stats");
@@ -231,9 +247,39 @@ pokemonStats.appendChild(pokemonSpeed);
 pokemonDetails.appendChild(pokemonStats);
 
 document.querySelector(":root").style.setProperty("--primary", primaryColor);
-document.querySelector(":root").style.setProperty("--hp", `${(pokemonProfile.stats[0].base_stat*100)/255}%`);
-document.querySelector(":root").style.setProperty("--atk", `${(pokemonProfile.stats[1].base_stat*100)/181}%`);
-document.querySelector(":root").style.setProperty("--def", `${(pokemonProfile.stats[2].base_stat*100)/230}%`);
-document.querySelector(":root").style.setProperty("--spAtk", `${(pokemonProfile.stats[3].base_stat*100)/180}%`);
-document.querySelector(":root").style.setProperty("--spDef", `${(pokemonProfile.stats[4].base_stat*100)/230}%`);
-document.querySelector(":root").style.setProperty("--speed", `${(pokemonProfile.stats[5].base_stat*100)/200}%`);
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--hp",
+    `${(pokemonProfile.stats[0].base_stat * 100) / 255}%`
+  );
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--atk",
+    `${(pokemonProfile.stats[1].base_stat * 100) / 181}%`
+  );
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--def",
+    `${(pokemonProfile.stats[2].base_stat * 100) / 230}%`
+  );
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--spAtk",
+    `${(pokemonProfile.stats[3].base_stat * 100) / 180}%`
+  );
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--spDef",
+    `${(pokemonProfile.stats[4].base_stat * 100) / 230}%`
+  );
+document
+  .querySelector(":root")
+  .style.setProperty(
+    "--speed",
+    `${(pokemonProfile.stats[5].base_stat * 100) / 200}%`
+  );

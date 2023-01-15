@@ -5,7 +5,7 @@ var currentShow;
 var offset = 0;
 var filterArr = [];
 var region = [{ name: "All Regions" }];
-var tmp = {};
+// var tmp = [];
 const typesName = [
   { type: "All Types" },
   {
@@ -107,28 +107,39 @@ async function fetchPokeList() {
       .then((res) => res.json())
       .then((pokemonData) => {
         // fetchPoke(pokemonData)
-        pokeList.push(pokemonData);
-        tmp[pokemonData.name] = {
-          pokemonData: {
+        // pokeList.push(pokemonData);
+        pokeList = [
+          ...pokeList,
+          {
             id: pokemonData.id,
             name: pokemonData.name,
             types: pokemonData.types.map((poke) => {
               return poke.type.name;
             }),
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            abilities: pokemonData.abilities.map((poke) => {
+              return poke.ability.name;
+            }),
+            stats: pokemonData.stats.map((poke) => {
+              return poke;
+            }),
           },
-        };
+        ];
       });
   }
-  console.log(tmp.pikachu);
-  localStorage.setItem("pokemonData", JSON.stringify(tmp));
-  //var arr = JSON.parse(localStorage.getItem("pokemonData"));
+  // console.log(pokeList);
+  localStorage.setItem("pokemonData", JSON.stringify(pokeList));
   return pokeList;
 }
+var arr = JSON.parse(localStorage.getItem("pokemonData"));
 // console.log(arr);
-// if (arr == null) {
-//   // pokeList = arr;
-// }
-filterList = await fetchPokeList();
+if (arr == null) {
+  filterList = await fetchPokeList();
+} else {
+  pokeList = arr;
+  filterList = pokeList;
+}
 
 showPokemon(filterList);
 
@@ -145,6 +156,10 @@ function showPokemon(pokeList) {
 }
 
 function createPokemon(pokemonData) {
+  // Add profile page to the card
+  const pokemonLink = document.createElement("a");
+  pokemonLink.setAttribute("href", "./profile.html");
+
   // Generate a card for each Pokémon
   const pokedexContainer = document.getElementById("pokedex-container");
   const pokemonCard = document.createElement("div");
@@ -171,25 +186,24 @@ function createPokemon(pokemonData) {
   }
 
   //Add Pokemon types and set color base on types
-
   const pokemonTypes = document.createElement("div");
   pokemonTypes.classList.add("pokemon-types");
   pokemonData.types.map((poke) => {
     const pokemonType = document.createElement("div");
     pokemonType.classList.add("pokemon-type");
-    pokemonTypes.appendChild(pokemonType).innerHTML = poke.type.name;
+    pokemonTypes.appendChild(pokemonType).innerHTML = poke;
     typesName.map((item) => {
       if (item.type.toLowerCase() == pokemonType.textContent) {
         pokemonType.style.backgroundColor = item.color;
       }
     });
   });
-
+  pokemonLink.appendChild(pokemonCard);
   pokemonCard.appendChild(pokemonImage);
   pokemonCard.appendChild(pokemonId);
   pokemonCard.appendChild(pokemonName);
   pokemonCard.appendChild(pokemonTypes);
-  pokedexContainer.appendChild(pokemonCard);
+  pokedexContainer.appendChild(pokemonLink);
 }
 
 // add new pokemon if user scroll to bottom
@@ -250,7 +264,25 @@ async function fetchRegion() {
     const response = await fetch(`https://pokeapi.co/api/v2/region/${i}`);
     const data = await response.json();
     region = [...region, data];
-    console.log(region);
+    // console.log(region);
+  }
+  for (let i = 1; i < 10; i++) {
+    await fetch(region[i].pokedexes[0].url)
+      .then((res) => res.json())
+      .then((pokemonData) => {
+        // pokeList.map((eachPoke) => {
+        // console.log(pokemonData);
+        pokemonData.pokemon_entries.map((poke) => {
+          // console.log(poke.pokemon_species.name);
+          // console.log(eachPoke.name + " alo");
+          // if ((poke.pokemon_species.name = eachPoke.name)) {
+          //   // console.log("hi");
+          //   eachPoke.region = pokemonData.name;
+          // }
+        });
+        // });
+      });
+    // console.log(pokeList);
   }
   return region;
 }
@@ -300,7 +332,7 @@ function filterPoke(selectedField) {
   pokedexContainer.innerHTML = "";
   filterArr = filterList.filter((pokemon) => {
     for (let poke of pokemon.types) {
-      if (poke.type.name == selectedField) {
+      if (poke == selectedField) {
         return true;
       }
     }
@@ -309,17 +341,26 @@ function filterPoke(selectedField) {
   if (selectedField == "all types") filterArr = filterList;
   currentShow = filterArr.length;
 
-  console.log(filterArr);
+  // console.log(filterArr);
   offset = 0;
   showPokemon(filterArr);
 }
 
 async function filerPokeByRegion(selectedField) {
-  const response = await fetch(region[1].pokedexes[0].url);
-  const data = await response.json();
-  console.log(data.pokemon_entries);
+  // const response = await fetch(region[1].pokedexes[0].url);
+  // const data = await response.json();
+  // console.log(data.pokemon_entries);
   // const regionArr = [];
   // data.pokemon_entries.forEach((poke) => {
   //   poke.pokemon_species.name =
   // })
 }
+
+const pokeCard = document.querySelectorAll(".pokemon-card");
+Array.from(pokeCard).forEach((card) => {
+  card.addEventListener("click", () => {
+    const pokeId = card.querySelector(".pokemon-id").dataset.id;
+    console.log(pokeId);
+    localStorage.setItem("pokeId", JSON.stringify(pokeId));
+  });
+});
