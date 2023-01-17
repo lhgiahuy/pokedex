@@ -4,8 +4,10 @@ var filterList = [];
 var currentShow;
 var offset = 0;
 var filterArr = [];
-var region = [{ name: "All Regions" }];
-// var tmp = [];
+var regions = [{ name: "All Regions" }];
+var pokemonById = {};
+var pokemonByName = {};
+var pokemonInRegion = {};
 const typesName = [
   { type: "All Types" },
   {
@@ -107,51 +109,64 @@ async function fetchPokeList() {
       .then((res) => res.json())
       .then((pokemonData) => {
         // fetchPoke(pokemonData)
-        // pokeList.push(pokemonData);
-        pokeList = [
-          ...pokeList,
-          {
-            id: pokemonData.id,
-            name: pokemonData.name,
-            types: pokemonData.types.map((poke) => {
-              return poke.type.name;
-            }),
-            height: pokemonData.height,
-            weight: pokemonData.weight,
-            abilities: pokemonData.abilities.map((poke) => {
-              return poke.ability.name;
-            }),
-            stats: pokemonData.stats.map((poke) => {
-              return poke;
-            }),
-          },
-        ];
+        pokemonById[pokemonData.id] = {
+          id: pokemonData.id,
+          name: pokemonData.species.name,
+          types: pokemonData.types.map((poke) => {
+            return poke.type.name;
+          }),
+          height: pokemonData.height,
+          weight: pokemonData.weight,
+          abilities: pokemonData.abilities.map((poke) => {
+            return poke.ability.name;
+          }),
+          stats: pokemonData.stats.map((poke) => {
+            return poke;
+          }),
+        };
+        pokemonByName[pokemonData.species.name] = {
+          id: pokemonData.id,
+        };
+        pokeList = [...pokeList, pokemonData.id];
       });
   }
-  // console.log(pokeList);
-  localStorage.setItem("pokemonData", JSON.stringify(pokeList));
+  console.log(pokemonById);
+  console.log(pokemonByName);
+
+  localStorage.setItem("pokemonById", JSON.stringify(pokemonById));
+  localStorage.setItem("pokemonByName", JSON.stringify(pokemonByName));
+  localStorage.setItem("pokeList", JSON.stringify(pokeList));
+
   return pokeList;
 }
-var arr = JSON.parse(localStorage.getItem("pokemonData"));
+const indexId = JSON.parse(localStorage.getItem("pokemonById"));
+const indexName = JSON.parse(localStorage.getItem("pokemonByName"));
+const indexList = JSON.parse(localStorage.getItem("pokeList"));
+
 // console.log(arr);
-if (arr == null) {
+if (indexId == null) {
   filterList = await fetchPokeList();
 } else {
-  pokeList = arr;
+  pokemonById = indexId;
+  pokemonByName = indexName;
+  pokeList = indexList;
   filterList = pokeList;
 }
-
+// console.log(pokemonById);
+// console.log(pokemonByName);
+console.log(filterList);
 showPokemon(filterList);
 
 function showPokemon(pokeList) {
-  console.log(pokeList);
-
+  // console.log(offset);
   const loadingImg = document.getElementById("loadingImg");
   //load 20 cards pokemon/time
   loadingImg.style.display = "none";
   currentShow = pokeList.length;
   for (let i = offset; i < offset + 20 && i < currentShow; i++) {
-    createPokemon(pokeList[i]);
+    // console.log(pokeList);
+    createPokemon(pokemonById[pokeList[i]]);
+    // console.log(pokemonById[pokeList[i]]);
   }
 }
 
@@ -220,8 +235,8 @@ searchInput.addEventListener("input", () => {
   if (searchInput.value != "") {
     filterList = [];
     pokedexContainer.innerHTML = "";
-    filterList = pokeList.filter((pokemon) => {
-      return pokemon.name.match(`${searchInput.value.trim()}`);
+    filterList = pokeList.filter((id) => {
+      return pokemonById[id].name.match(`${searchInput.value.trim()}`);
     });
   } else {
     pokedexContainer.innerHTML = "";
@@ -263,28 +278,23 @@ async function fetchRegion() {
   for (let i = 1; i < 10; i++) {
     const response = await fetch(`https://pokeapi.co/api/v2/region/${i}`);
     const data = await response.json();
-    region = [...region, data];
+    regions = [...regions, data];
     // console.log(region);
   }
   for (let i = 1; i < 10; i++) {
-    await fetch(region[i].pokedexes[0].url)
+    await fetch(regions[i].pokedexes[0].url)
       .then((res) => res.json())
       .then((pokemonData) => {
-        // pokeList.map((eachPoke) => {
-        // console.log(pokemonData);
-        pokemonData.pokemon_entries.map((poke) => {
-          // console.log(poke.pokemon_species.name);
-          // console.log(eachPoke.name + " alo");
-          // if ((poke.pokemon_species.name = eachPoke.name)) {
-          //   // console.log("hi");
-          //   eachPoke.region = pokemonData.name;
-          // }
-        });
-        // });
+        pokemonInRegion[regions[i].name] = {
+          pokemonId: pokemonData.pokemon_entries.map((poke) => {
+            return poke.pokemon_species.name;
+          }),
+        };
+        // console.log(pokemonInRegion);
+        // console.log(region);
       });
-    // console.log(pokeList);
   }
-  return region;
+  return regions;
 }
 
 fetchRegion();
@@ -292,13 +302,15 @@ fetchRegion();
 const dropdownArrowRegion = document.getElementById("dropdownArrow__region");
 const menuOptionsRegion = document.getElementById("options--region");
 dropdownArrowRegion.addEventListener("click", () => {
-  region.map((location) => {
+  menuOptionsRegion.innerHTML = "";
+  console.log(regions);
+  regions.map((location) => {
     const option = document.createElement("li");
     option.className = "option";
     // add type
     const optionText = document.createElement("span");
-    optionText.textContent = location.name;
     optionText.className = "option-text";
+    optionText.textContent = location.name;
     option.appendChild(optionText);
     menuOptionsRegion.appendChild(option);
   });
@@ -321,8 +333,9 @@ function showSelectOption(filterName, menuName) {
       let selectedOption = option.querySelector(".option-text").innerText;
       sBtn_text.innerText = selectedOption;
       optionMenu.classList.remove("active");
-      filterPoke(selectedOption.toLowerCase());
-      filerPokeByRegion(selectedOption);
+      if (filterName.includes("type")) filterPoke(selectedOption.toLowerCase());
+      else if (filterName.includes("region"))
+        filerPokeByRegion(selectedOption.toLowerCase());
     });
   });
 }
@@ -330,8 +343,8 @@ function showSelectOption(filterName, menuName) {
 function filterPoke(selectedField) {
   const pokedexContainer = document.getElementById("pokedex-container");
   pokedexContainer.innerHTML = "";
-  filterArr = filterList.filter((pokemon) => {
-    for (let poke of pokemon.types) {
+  filterArr = filterList.filter((id) => {
+    for (let poke of pokemonById[id].types) {
       if (poke == selectedField) {
         return true;
       }
@@ -347,13 +360,16 @@ function filterPoke(selectedField) {
 }
 
 async function filerPokeByRegion(selectedField) {
-  // const response = await fetch(region[1].pokedexes[0].url);
-  // const data = await response.json();
-  // console.log(data.pokemon_entries);
-  // const regionArr = [];
-  // data.pokemon_entries.forEach((poke) => {
-  //   poke.pokemon_species.name =
-  // })
+  // console.log(pokemonInRegion[selectedField].pokemonId);
+  if (selectedField == "all regions") filterArr = filterList;
+  else {
+    filterArr = pokemonInRegion[selectedField].pokemonId.map((poke) => {
+      // console.log(pokemonById[pokemonByName[poke].id]);
+      return pokemonByName[poke].id;
+    });
+  }
+  console.log(selectedField);
+  showPokemon(filterArr);
 }
 
 const pokeCard = document.querySelectorAll(".pokemon-card");
@@ -361,6 +377,6 @@ Array.from(pokeCard).forEach((card) => {
   card.addEventListener("click", () => {
     const pokeId = card.querySelector(".pokemon-id").dataset.id;
     console.log(pokeId);
-    localStorage.setItem("pokeId", JSON.stringify(pokeId));
+    localStorage.setItem("pokeId", JSON.stringify(pokemonById[pokeId]));
   });
 });
