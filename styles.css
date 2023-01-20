@@ -23,7 +23,7 @@ body {
 }
 
 .pokedex__wrapper {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -42,10 +42,9 @@ body {
   font-weight: 700;
   font-size: 24px;
   line-height: 32px;
-  display: flex;
-  align-items: center;
+  display: block;
   color: #000000;
-  margin: 100px 0 10px 30px;
+  margin: 50px 0 10px 30px;
 }
 
 .pokedex__search {
@@ -117,7 +116,7 @@ input[type="search"]:focus::-webkit-search-cancel-button {
   justify-content: space-around;
   flex-wrap: wrap;
   padding: 10px 4px 0px;
-  margin-top: 60px;
+  margin-top: 100px;
 }
 
 #pokedex-container a {
@@ -181,16 +180,18 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 
 .pokemon-type {
   padding: 2px 8px;
-  background: #a43e9e;
   border-radius: 10px;
 }
 
 .pokedex__filter {
+  position: relative;
   width: 330px;
   height: 25px;
+  transform: translateY(650%);
   display: flex;
   justify-content: space-around;
   margin: 30px 30px;
+  z-index: 10;
 }
 
 .pokedex__filter i {
@@ -266,7 +267,7 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 }
 .select-menu.active .options {
   display: block;
-  opacity: 0;
+  display: none;
   z-index: 10;
   animation-name: fadeInUp;
   -webkit-animation-name: fadeInUp;
@@ -279,6 +280,7 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 @keyframes fadeInUp {
   from {
     transform: translate3d(0, 30px, 0);
+    opacity: 0;
   }
   to {
     transform: translate3d(0, 0, 0);
@@ -288,10 +290,10 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 @keyframes fadeInDown {
   from {
     transform: translate3d(0, 0, 0);
-    opacity: 1;
+    opacity: 0;
   }
   to {
     transform: translate3d(0, 20px, 0);
-    opacity: 0;
+    opacity: 1;
   }
 }
