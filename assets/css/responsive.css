@@ -127,7 +127,10 @@ width <= 575 */
     line-height: 12px;
     color: #666666;
   }
-
+  .select-menu.active .options {
+    display: none;
+    opacity: 1;
+  }
   .select-btn i {
     font-size: 15px;
     transition: 0.3s;

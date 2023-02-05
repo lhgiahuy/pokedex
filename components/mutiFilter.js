@@ -5,6 +5,7 @@ import showPokemon, { setCurrentShow } from "./showPokemon.js";
 import { filterList, pokeList, setFilterList } from "./fetchPokeList.js";
 
 var offset = JSON.parse(localStorage.getItem("offset"));
+var afterSearchList = pokeList;
 var state = {
   // tags that render are inside of 'passingTags' object.
   passingTags: {
@@ -16,7 +17,7 @@ var state = {
   },
 };
 const regions = await fetchRegion();
-console.log(regions);
+
 for (let key of typesName) {
   state.passingTags.types[key.type.toLowerCase()] = false;
 }
@@ -24,24 +25,26 @@ for (let key of regions) {
   state.passingTags.regions[key.name.toLowerCase()] = false;
 }
 function useState(defaultValue) {
-  // 👆🏻We create a function useState with a default value
+  // We create a function useState with a default value
   let value = defaultValue;
-  // 👆🏻We create a local variable value = defaultValue
+  // We create a local variable value = defaultValue
   function getValue() {
-    // 👆🏻We create a function getValue to get the value that return the value
+    // We create a function getValue to get the value that return the value
     return value;
   }
   function setValue(newValue) {
-    // 👆🏻We create a function to set the value with parameter newValue
-    value = newValue; // 👈🏻 We change the value for newValue
+    // We create a function to set the value with parameter newValue
+    value = newValue; //  We change the value for newValue
   }
   return [getValue, setValue];
-  // 👆🏻We return an array with the value and the function
+  // We return an array with the value and the function
 }
 const [filter, setFilter] = useState(state);
 
 //**************UNIVERSAL FILTER ****************//
 export function allFilterClickListener(selectedField, filterProp) {
+  console.log("ko phải search");
+  setFilterList(afterSearchList);
   if (filterProp == "types")
     setFilter({
       passingTags: {
@@ -70,19 +73,13 @@ export function allFilterClickListener(selectedField, filterProp) {
     },
   });
 
-  console.log(filter());
   const pokedexContainer = document.getElementById("pokedex-container");
   pokedexContainer.innerHTML = "";
   offset = 0;
   localStorage.setItem("offset", JSON.stringify(offset));
-  console.log(filterList);
-  // if (selectedField == "all types" || selectedField == "all regions")
-  //   filterList = multiPropsFilter(pokeList, filteredCollected());
-  setFilterList(multiPropsFilter(searchPokemon(), filteredCollected()));
-
+  setFilterList(multiFilter(afterSearchList, filteredCollected()));
   showPokemon(filterList);
 }
-console.log(filter());
 
 //*********COLLECT ALL KEYS AND FILTER **************//
 // This function collects ALL keys that have true as a value, then create a new obj to compare to filter.
@@ -102,7 +99,7 @@ function filteredCollected() {
   return collectedTrueKeys;
 }
 
-function multiPropsFilter(pokeList, filters) {
+function multiFilter(pokeList, filters) {
   const filterKeys = Object.keys(filters);
   return pokeList.filter((poke) => {
     return filterKeys.every((key) => {
@@ -119,27 +116,22 @@ function multiPropsFilter(pokeList, filters) {
   });
 }
 
-// **************** SEARCH Filter & Dispatch ****************
+// **************** SEARCH Filter ****************
 function searchPokemon() {
-  setFilterList(multiPropsFilter(pokeList, filteredCollected()));
-  if (filter().passingTags.search == "") return filter;
-  console.log(filter().passingTags.search);
-  return filterList.filter((pokemon) => {
-    return pokemonById[pokemon].name.includes(
-      filter().passingTags.search.searchInput
-    );
-  });
+  if (filter().passingTags.search.searchInput == "") afterSearchList = pokeList;
+  else {
+    afterSearchList = pokeList.filter((pokemon) => {
+      return pokemonById[pokemon].name.includes(
+        filter().passingTags.search.searchInput
+      );
+    });
+  }
+  setFilterList(multiFilter(afterSearchList, filteredCollected()));
 }
 
 const searchInput = document.getElementById("pokedex-search");
 searchInput.addEventListener("input", () => {
   const pokedexContainer = document.getElementById("pokedex-container");
-  const selectedFieldType = document
-    .getElementById("type")
-    .innerText.toLowerCase();
-  const selectedFieldRegion = document
-    .getElementById("region")
-    .innerText.toLowerCase();
   setFilter({
     passingTags: {
       ...filter().passingTags,
@@ -147,39 +139,9 @@ searchInput.addEventListener("input", () => {
     },
   });
   pokedexContainer.innerHTML = "";
-  setFilterList(searchPokemon());
   offset = 0;
   localStorage.setItem("offset", JSON.stringify(offset));
-  showPokemon(filterList);
-
-  console.log(filterList);
-  console.log(searchPokemon());
-  if (searchInput.value != "") {
-    setFilterList(searchPokemon());
-  } else {
-    pokedexContainer.innerHTML = "";
-    setFilterList(pokeList);
-    offset = 0;
-    localStorage.setItem("offset", JSON.stringify(offset));
-  }
-  console.log(filterList);
-  console.log(pokemonById);
+  searchPokemon();
   setCurrentShow(filterList.length);
-  if (selectedFieldType != "type") {
-    allFilterClickListener(selectedFieldType, "types");
-    offset =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
-        ? filterList.length
-        : Math.ceil((window.innerHeight + window.scrollY) / 150);
-    localStorage.setItem("offset", JSON.stringify(offset));
-
-    if (selectedFieldRegion != "region") {
-      allFilterClickListener(selectedFieldType, "regions");
-      offset =
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
-          ? filterList.length
-          : Math.ceil((window.innerHeight + window.scrollY) / 150);
-      localStorage.setItem("offset", JSON.stringify(offset));
-    }
-  } else showPokemon(filterList);
+  showPokemon(filterList);
 });

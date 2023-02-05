@@ -267,7 +267,8 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 }
 .select-menu.active .options {
   display: block;
-  display: none;
+  opacity: 0;
+  /* display: none; */
   z-index: 10;
   animation-name: fadeInUp;
   -webkit-animation-name: fadeInUp;
@@ -290,10 +291,10 @@ input[type="search"]:focus::-webkit-search-cancel-button {
 @keyframes fadeInDown {
   from {
     transform: translate3d(0, 0, 0);
-    opacity: 0;
+    opacity: 1;
   }
   to {
     transform: translate3d(0, 20px, 0);
-    opacity: 1;
+    opacity: 0;
   }
 }
